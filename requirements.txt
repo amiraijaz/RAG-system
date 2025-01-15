@@ -1,6 +1,7 @@
 langchain==0.1.0
 langchain-community==0.0.13
-faiss-cpu==1.7.4
+langchain-openai==0.0.2
 streamlit==1.29.0
 pypdf==3.17.1
-openai
+openai==1.6.1
+chromadb==0.4.22
