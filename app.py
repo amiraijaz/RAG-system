@@ -1,9 +1,9 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings, OpenAI
 from langchain.chains import RetrievalQA
+from langchain_community.vectorstores import Chroma
 from langchain.prompts import PromptTemplate
 import streamlit as st
 import time
@@ -52,10 +52,14 @@ class RAGSystem:
     
     #STEP 2: Embedding Generation
     def generate_embeddings(self, chunks, status_placeholder):
-        status_placeholder.write("🔄 Generating embeddings...")
-        self.vector_store = FAISS.from_documents(chunks, self.embeddings)
-        time.sleep(0.5)  # Simulate processing time
-        status_placeholder.write("✅ Embeddings generated and stored")
+        status_placeholder.write("🔄 Generating embeddings with OpenAI...")
+        self.vector_store = Chroma.from_documents(
+            documents=chunks,
+            embedding=self.embeddings,
+            persist_directory="./chroma_db"
+        )
+        time.sleep(0.5)
+        status_placeholder.write("✅ Embeddings generated and stored in ChromaDB")
         return self.vector_store
 
     #STEP 3: User Query Processing
