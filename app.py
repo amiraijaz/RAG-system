@@ -16,14 +16,20 @@ class RAGSystem:
         # Set OpenAI API key in environment
         os.environ["OPENAI_API_KEY"] = self.api_key
         
-        # Use OpenAI instead of Ollama
+        # Initialize OpenAI clients with minimal configuration
         try:
+            # Initialize embeddings with only the necessary parameters
             self.embeddings = OpenAIEmbeddings(
+                openai_api_key=self.api_key,
                 model="text-embedding-ada-002",
-                openai_api_key=self.api_key
+                disallowed_special=(),
+                chunk_size=1000
             )
-            self.llm = OpenAI(openai_api_key=self.api_key)
+            
+            # Initialize LLM
+            self.llm = OpenAI(temperature=0)
             self.vector_store = None
+            
         except Exception as e:
             st.error(f"Error initializing OpenAI clients: {str(e)}")
             raise
@@ -64,8 +70,7 @@ class RAGSystem:
         status_placeholder.write("🔄 Generating embeddings with OpenAI...")
         self.vector_store = Chroma.from_documents(
             documents=chunks,
-            embedding=self.embeddings,
-            persist_directory="./chroma_db"
+            embedding=self.embeddings
         )
         time.sleep(0.5)
         status_placeholder.write("✅ Embeddings generated and stored in ChromaDB")
@@ -89,7 +94,7 @@ class RAGSystem:
         status_placeholder.write("✅ Relevant documents retrieved")
         return similar_chunks
 
-    #STEP 5: Context Integeratiopn
+    #STEP 5: Context Integration
     def integrate_context(self):
         prompt = PromptTemplate(
             template=self.prompt_template,
