@@ -10,13 +10,16 @@ import time
 import os
 
 class RAGSystem:
-    def __init__(self, model_name="llama2"):
-        # Get API key from Streamlit secrets
+    def __init__(self, model_name="gpt-3.5-turbo"):
+        # Initialize OpenAI API key from Streamlit secrets for deployment
+        if "OPENAI_API_KEY" not in st.secrets:
+            raise ValueError("OPENAI_API_KEY not found in Streamlit secrets")
+            
         self.api_key = st.secrets["OPENAI_API_KEY"]
         
-        # Use OpenAI instead of Ollama
-        self.embeddings = OpenAIEmbeddings(openai_api_key=self.api_key)
-        self.llm = OpenAI(openai_api_key=self.api_key)
+        # Initialize OpenAI components with proper configuration
+        self.embeddings = OpenAIEmbeddings(api_key=self.api_key)
+        self.llm = OpenAI(api_key=self.api_key, temperature=0.7)
         self.vector_store = None
         
         self.prompt_template = """
