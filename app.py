@@ -9,15 +9,24 @@ import time
 import os
 
 class RAGSystem:
-    def __init__(self, model_name="llama2"):
+   def __init__(self, model_name="llama2"):
         # Get API key from Streamlit secrets
         self.api_key = st.secrets["OPENAI_API_KEY"]
         
+        # Set OpenAI API key in environment
+        os.environ["OPENAI_API_KEY"] = self.api_key
+        
         # Use OpenAI instead of Ollama
-        # Fixed: Removed proxies argument from OpenAIEmbeddings initialization
-        self.embeddings = OpenAIEmbeddings()  # Will use OPENAI_API_KEY from environment
-        self.llm = OpenAI(openai_api_key=self.api_key)
-        self.vector_store = None
+        try:
+            self.embeddings = OpenAIEmbeddings(
+                model="text-embedding-ada-002",
+                openai_api_key=self.api_key
+            )
+            self.llm = OpenAI(openai_api_key=self.api_key)
+            self.vector_store = None
+        except Exception as e:
+            st.error(f"Error initializing OpenAI clients: {str(e)}")
+            raise
         
         self.prompt_template = """
         Use the following pieces of context to answer the question at the end.
