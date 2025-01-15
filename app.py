@@ -1,6 +1,5 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings, OpenAI
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import Chroma
@@ -10,16 +9,14 @@ import time
 import os
 
 class RAGSystem:
-    def __init__(self, model_name="gpt-3.5-turbo"):
-        # Initialize OpenAI API key from Streamlit secrets for deployment
-        if "OPENAI_API_KEY" not in st.secrets:
-            raise ValueError("OPENAI_API_KEY not found in Streamlit secrets")
-            
+    def __init__(self, model_name="llama2"):
+        # Get API key from Streamlit secrets
         self.api_key = st.secrets["OPENAI_API_KEY"]
         
-        # Initialize OpenAI components with proper configuration
-        self.embeddings = OpenAIEmbeddings(api_key=self.api_key)
-        self.llm = OpenAI(api_key=self.api_key, temperature=0.7)
+        # Use OpenAI instead of Ollama
+        # Fixed: Removed proxies argument from OpenAIEmbeddings initialization
+        self.embeddings = OpenAIEmbeddings()  # Will use OPENAI_API_KEY from environment
+        self.llm = OpenAI(openai_api_key=self.api_key)
         self.vector_store = None
         
         self.prompt_template = """
@@ -170,7 +167,7 @@ def create_streamlit_ui():
         )
 
     # Main page
-    st.title("🤖 RAG System")
+    st.title("🤖 RAG System with Ollama")
     st.markdown("---")
     
     # Initialize RAG system
