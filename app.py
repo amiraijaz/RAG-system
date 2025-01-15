@@ -9,7 +9,7 @@ import time
 import os
 
 class RAGSystem:
-   def __init__(self, model_name="llama2"):
+    def __init__(self, model_name="llama2"):
         # Get API key from Streamlit secrets
         self.api_key = st.secrets["OPENAI_API_KEY"]
         
