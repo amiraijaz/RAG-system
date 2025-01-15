@@ -167,7 +167,7 @@ def create_streamlit_ui():
         )
 
     # Main page
-    st.title("🤖 RAG System with Ollama")
+    st.title("🤖 RAG System")
     st.markdown("---")
     
     # Initialize RAG system
